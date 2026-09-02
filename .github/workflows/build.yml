@@ -18,54 +18,10 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
-          
-      - name: Install buildozer from source
-        run: |
-          git clone https://github.com/kivy/buildozer.git
-          cd buildozer
-          sudo python3 setup.py install
-          cd ..
+          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev wget
       
-      - name: Initialize buildozer
-        run: |
-          # Créer le fichier de configuration
-          echo "[app]" > buildozer.spec
-          echo "title = MonApp" >> buildozer.spec
-          echo "package.name = monapp" >> buildozer.spec
-          echo "package.domain = org.test" >> buildozer.spec
-          echo "source.dir = ." >> buildozer.spec
-          echo "source.include_exts = py,png,jpg,kv,atlas" >> buildozer.spec
-          echo "version = 0.1" >> buildozer.spec
-          echo "requirements = python3,kivy,requests,beautifulsoup4" >> buildozer.spec
-          echo "orientation = portrait" >> buildozer.spec
-          echo "osx.python_version = 3" >> buildozer.spec
-          echo "osx.kivy_version = 2.1.0" >> buildozer.spec
-          echo "android.api = 33" >> buildozer.spec
-          echo "android.ndk = 23b" >> buildozer.spec
-          echo "android.minapi = 21" >> buildozer.spec
-          echo "android.sdk = 33" >> buildozer.spec
-          echo "android.build_tools = 33.0.2" >> buildozer.spec
-          echo "android.gradle_dependencies =" >> buildozer.spec
-          echo "android.add_src =" >> buildozer.spec
-      
-      - name: Setup Android SDK
-        run: |
-          mkdir -p ~/.android
-          echo "count=0" > ~/.android/repositories.cfg
-          
       - name: Build APK
-        run: |
-          # Essayer de construire
-          buildozer android debug || true
-          # Si erreur de licence, forcer l'acceptation
-          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
-          # Accepter les licences une par une
-          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" 2>/dev/null || true
-          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" 2>/dev/null || true
-          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" 2>/dev/null || true
-          # Relancer le build
-          buildozer android debug
+        run: ./build_apk.sh
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
