@@ -32,7 +32,13 @@ yes | sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2" ||
 # Installer buildozer
 pip install buildozer
 
+# Créer le dossier bin
+mkdir -p bin
+
 # Construire l'APK
 buildozer -v android debug
+
+# Copier l'APK dans bin s'il a été créé ailleurs
+find . -name "*.apk" -exec cp {} bin/ \;
 
 echo "Build terminé !"
